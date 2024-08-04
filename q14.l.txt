@@ -1,0 +1,38 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+double num1 = 0.0;
+char operator = '\0';
+%}
+
+%%
+[0-9]+(\.[0-9]+)?    { num1 = atof(yytext); }
+\+|\-|\*|\/           { operator = yytext[0]; }
+\n                    { 
+                        if (operator) {
+                            printf("Result: ");
+                            switch (operator) {
+                                case '+': printf("%f\n", num1 + num1); break;
+                                case '-': printf("%f\n", num1 - num1); break;
+                                case '*': printf("%f\n", num1 * num1); break;
+                                case '/': 
+                                    if (num1 != 0) {
+                                        printf("%f\n", num1 / num1);
+                                    } else {
+                                        printf("Error: Division by zero\n");
+                                    }
+                                    break;
+                                default: printf("Unknown operator\n");
+                            }
+                        }
+                        num1 = 0.0; operator = '\0';
+                    }
+[ \t]+                { /* Ignore whitespace */ }
+.                     { /* Ignore other characters */ }
+%%
+
+int main(int argc, char **argv) {
+    yylex();  // Start lexical analysis
+    return 0;
+}
